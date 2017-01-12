@@ -6,6 +6,7 @@
 package udpserver;
 import java.io.*;
 import java.net.*;
+import java.util.Scanner;
 
 class UDPServer{
 	public static void main(String [] args) throws Exception{
@@ -21,6 +22,11 @@ class UDPServer{
 			InetAddress IPAddress = receivePacket.getAddress();
 			int port = receivePacket.getPort();
 			String capitalizedSentence = clientSentence.toUpperCase();
+                        
+                        System.out.println("Received message: " + clientSentence);
+                        Scanner scanner = new Scanner (System.in);
+                        String reply = scanner.nextLine();
+                        
 			sendData = capitalizedSentence.getBytes();
 			DatagramPacket sendPacket =
 				new DatagramPacket(sendData,sendData.length, IPAddress, port);
