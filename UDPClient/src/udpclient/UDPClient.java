@@ -16,9 +16,12 @@ class UDPClient {
 		Scanner inFromUser = new Scanner(System.in);
 		DatagramSocket clientSocket = new DatagramSocket();
 		InetAddress IPAddress = InetAddress.getByName("172.18.15.57");
-		byte[] sendData = new byte[1024];
-		byte[] receiveData = new byte[1024];
+                
+                //want to keep listening and respond over and over again
                 while (true){
+                    byte[] sendData = new byte[1024];
+                    byte[] receiveData = new byte[1024];
+                
                     System.out.println("Please enter a message to send to the server:");
                     sentence = inFromUser.nextLine();
                     sendData = sentence.getBytes();
@@ -28,7 +31,7 @@ class UDPClient {
                     DatagramPacket receivePacket = 
                             new DatagramPacket(receiveData, receiveData.length);
                     clientSocket.receive(receivePacket);
-                    modifiedSentence = new String(receivePacket.getData());
+                    modifiedSentence = new String(receivePacket.getData(),0,receivePacket.getLength());
                     System.out.println("FROM SERVER: " + modifiedSentence);
                     if (modifiedSentence == "Close"){
                         clientSocket.close();
