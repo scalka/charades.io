@@ -22,15 +22,15 @@ class UDPServer{
                         //get data (bytes)out of packed and build new string
 			String clientSentence = 
 				new String(receivePacket.getData(),0,receivePacket.getLength());
-                        String capitalizedSentence = clientSentence.toUpperCase();
-                        sendData = capitalizedSentence.getBytes();
-                        
+
                         //gets machine
 			InetAddress IPAddress = receivePacket.getAddress();
                         //gets port
-			int port = receivePacket.getPort();			
+			int port = receivePacket.getPort();	
+                        
+                        sendData = clientSentence.getBytes();
                         //show received message
-                        System.out.println("Received message: " + clientSentence);
+                        System.out.println("Received message: " + clientSentence.toUpperCase());
                         
                         Scanner scanner = new Scanner (System.in);
                         String reply = scanner.nextLine();	
