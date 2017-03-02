@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Socket.io Demo</title>
+        <meta charset="utf-8">
+    
+    </head>
+    <body>
+        <h1>Socket.io Demo</h1>
+        <p id="text">
+            0 Clients Connected
+        </p>
+        <!--CLIENT SIDE SOCKET.IO-->
+        <script src="/socket.io/socket.io.js"></script>
+        <script>
+            var socket = io.connect();
+            
+            //listening for messages
+            //in this case for hello
+            socket.on('hello', function(data){
+                document.getElementById('text').innerHTML = data + "hello's";
+            });
+        </script>
+    </body>
+
+</html>
