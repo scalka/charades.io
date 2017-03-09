@@ -6,13 +6,22 @@ var server = require('http').createServer(app); // creates http server which is 
 var io = require('socket.io')(server); //io - input output // require socket.io and make it available to the server
 
 var numOfCliets = 0;
+var clickCount = 0;
 
 //define directiories which are exposed to web
 app.use(express.static(__dirname + '/node_modules'));
+//feature of Express is its ability to server static files like images, CSS files and JavaScript files
+app.use(express.static(__dirname + '/public')); 
+
+//start our web server and socket.io server listening
+server.listen(3000, function(){
+  console.log('listening on *:3000');
+}); 
 
 //ROUTING
 //http command
 //request for / is the 1st request
+//redirect / to our index.html file
 app.get('/', function(req, res){
     console.log("GET request for '/' ");
     //.send send text
@@ -28,11 +37,25 @@ app.get('/users', function(req, res){
 });
 
 //SERVER SIDE SOCKET.IO
-//if sb connects to my socket run this function
+//if client connects to my socket run this function
 io.on('connection', function(client){
     console.log("client connected");
     numOfCliets++;
     io.emit('hello', numOfCliets); //send msges out
-});
+    /* When the server receives one of these messages 
+    it increments the clickCount variable and emits a 'buttonUpdate' message to all clients.*/
+    client.on('clicked', function(data){
+        clickCount++;
+        io.emit('buttonUpdate', clickCount);
+    });
 
-server.listen(3000); // listen on port 3000
+    client.on('messageEmit', function(data){
+        //console.log(data);
+        io.emit('sendingMsg', data);
+    });
+
+    client.on('clearArea', function(data){
+        io.emit('clearArea');
+        console.log("clear");
+    });
+});

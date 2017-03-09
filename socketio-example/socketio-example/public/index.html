@@ -15,18 +15,9 @@
         <p id="text">
             0 Clients Connected
         </p>
-
-         <p id="buttonCount">The button has been clicked 0 times.</p>
-         <button onclick="buttonClicked()">Click me</button>
-
-         <h2>send a message</h2>
-         <input type="text" name="message" id="message">
-         <button onclick="sendMessage()">Send</button>
-         <h2 id="receivedMsg">Received message</h2>
-
-         <canvas id="myCanvas" width="500" height="500"></canvas>
+        <canvas id="myCanvas" width="500" height="500"></canvas>
          <br>
-         <button onclick="javascript:clearArea();return false;">Clear Area</button>
+         <button id="clearCanvas">Clear Area</button>
          Line width : <select id="selWidth">
             <option value="1">1</option>
             <option value="3">3</option>
@@ -44,9 +35,21 @@
             <option value="gray">gray</option>
         </select>
 
+        <div id="chat">
+            <ul id="messages_ul">
+                
+            </ul>
+        </div>
+
+         <input type="text" name="message" id="message">
+         <button onclick="sendMessage()">Send</button>
+
 
 
 
     </body>
 
 </html>
+
+
+<!-- onclick="clearArea()" -->

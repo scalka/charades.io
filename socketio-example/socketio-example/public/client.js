@@ -1,9 +1,8 @@
-var socket = io.connect();
-
 /*
 .emit Sends messages between server-client(s).
 .on Handles incoming messages
 */
+var socket = io.connect();
 
            
 //listening for messages
@@ -12,44 +11,38 @@ socket.on('hello', function(data){
     document.getElementById('text').innerHTML = data + "clients";
 });
 
-//onclick function 
-function buttonClicked(){
-	socket.emit('clicked');
-}
-
-//sending msg
-function sendMessage(){
-	var msg = document.getElementById('message').value;
-	console.log(msg);
-	socket.emit('messageEmit', msg);
-}
-
 //incoming
 socket.on('buttonUpdate', function(data){
-	document.getElementById("buttonCount").innerHTML = 'The button has been clicked ' + data + ' times.';
+    document.getElementById("buttonCount").innerHTML = 'The button has been clicked ' + data + ' times.';
 });
 
 socket.on('sendingMsg', function(data){
-	document.getElementById("receivedMsg").innerHTML = "received " + data;
-	console.log(data);
-
+    newMessage(data);
 });
 
 socket.on('drawingEmit', function(x, y, isDown){
-	console.log("draw");
-	Draw(x, y, isDown);
+    console.log("draw");
+    Draw(x, y, isDown);
 });
+
+socket.on('clearArea', function(data){
+   clearArea();
+   console.log("clear");
+});
+
 
 //drawing
 var canvas = document.getElementById("myCanvas");
 var ctx;
 var mousePressed = false;
 var lastX, lastY;
+var ul;
 
 //DRAWING PART
 function init(){
-	ctx = document.getElementById('myCanvas').getContext("2d");
-	$('#myCanvas').mousedown(function (e) {
+    ctx = document.getElementById('myCanvas').getContext("2d");
+    ul = document.getElementById("messages_ul");
+    $('#myCanvas').mousedown(function (e) {
         mousePressed = true;
         Draw(e.pageX - $(this).offset().left, e.pageY - $(this).offset().top, false);
     });
@@ -58,9 +51,9 @@ function init(){
         if (mousePressed) {
             Draw(e.pageX - $(this).offset().left, e.pageY - $(this).offset().top, true);
 
-	            var x = e.pageX - $(this).offset().left;
-	            var y = e.pageY - $(this).offset().top;
-	            var isDown = true;
+                var x = e.pageX - $(this).offset().left;
+                var y = e.pageY - $(this).offset().top;
+                var isDown = true;
 
             socket.emit('draw', x, y, isDown);
 
@@ -70,10 +63,25 @@ function init(){
     $('#myCanvas').mouseup(function (e) {
         mousePressed = false;
     });
-	    $('#myCanvas').mouseleave(function (e) {
+        $('#myCanvas').mouseleave(function (e) {
         mousePressed = false;
     });
+
+    var clearCanvasButton = document.getElementById("clearCanvas");
+    console.log(clearCanvasButton);
+    clearCanvasButton.addEventListener('click', function(){
+       socket.emit('clearArea');
+       clearArea();
+    });
+
 }
+//sending msg
+function sendMessage(){
+	var msg = document.getElementById('message').value;
+	console.log(msg);
+	socket.emit('messageEmit', msg);
+}
+
 function Draw(x, y, isDown) {
     if (isDown) {
         ctx.beginPath();
@@ -91,4 +99,12 @@ function clearArea() {
     // Use the identity matrix while clearing the canvas
     ctx.setTransform(1, 0, 0, 1, 0, 0);
     ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+    
+}
+
+function newMessage(data){
+    var li = document.createElement("li");
+    li.setAttribute("class", "message_li");
+    li.innerHTML = data;
+    ul.appendChild(li);
 }

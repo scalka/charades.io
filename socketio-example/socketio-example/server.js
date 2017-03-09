@@ -55,9 +55,12 @@ io.on('connection', function(client){
     });
 
     client.on('draw', function(x, y, isDown){
-        console.log(x);
-        console.log(y);
         io.emit('drawingEmit', x, y, isDown);
+    });
+
+    client.on('clearArea', function(data){
+        io.emit('clearArea');
+        console.log("clear area");
     });
 });
 
