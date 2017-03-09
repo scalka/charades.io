@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Socket.io Demo</title>
+        <meta charset="utf-8">
+        <link rel="stylesheet" href="css/styles.css">
+        <!--CLIENT SIDE SOCKET.IO-->
+        <script src="/socket.io/socket.io.js"></script>
+        <script type="text/javascript" src="client.js"></script>
+        <link 
+    </head>
+    <body>
+        <h1>Socket.io Demo</h1>
+        <p id="text">
+            0 Clients Connected
+        </p>
+
+         <p id="buttonCount">The button has been clicked 0 times.</p>
+         <button onclick="buttonClicked()">Click me</button>
+
+         <h2>send a message</h2>
+         <input type="text" name="message" id="message">
+         <button onclick="sendMessage()">Send</button>
+         <h2 id="receivedMsg">Received message</h2>
+
+         <canvas id="myCanvas" width="500" height="500"></canvas>
+    </body>
+
+</html>
