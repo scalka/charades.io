@@ -9,7 +9,7 @@ var socket = io.connect();
 //listening for messages
 //in this case for hello
 socket.on('hello', function(data){
-    document.getElementById('text').innerHTML = data + "clients";
+    document.getElementById('clientsList').innerHTML = data + "clients with id " + socket.id ;
 });
 
 //onclick function 

@@ -11,10 +11,15 @@
         <link 
     </head>
     <body onload="init()">
-        <h1>Socket.io Demo</h1>
-        <p id="text">
+        <p>Your nickname</p> <input type="text" name="nickname" id="nickname">
+        <button onclick="saveNickname()">Save</button>
+        <p id="clientsList">
             0 Clients Connected
         </p>
+        <ul id="clients_ul">
+                
+        </ul>
+
         <canvas id="myCanvas" width="500" height="500"></canvas>
          <br>
          <button id="clearCanvas">Clear Area</button>

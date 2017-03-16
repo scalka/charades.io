@@ -8,7 +8,18 @@ var socket = io.connect();
 //listening for messages
 //in this case for hello
 socket.on('hello', function(data){
-    document.getElementById('text').innerHTML = data + "clients";
+    document.getElementById('clientsList').innerHTML = data + "clients with id " + socket.id ;
+});
+
+socket.on('clientsList', function(data){
+    console.log("client " + data);
+    document.getElementById("clientsList").innerHTML = "";
+    for (var i =0 ; i < data.length; i++){
+        var li = document.createElement("li");
+        li.setAttribute("class", "clientsListLi");
+        li.innerHTML = data[i];
+        clients_ul.appendChild(li);
+    }
 });
 
 //incoming
@@ -16,18 +27,22 @@ socket.on('buttonUpdate', function(data){
     document.getElementById("buttonCount").innerHTML = 'The button has been clicked ' + data + ' times.';
 });
 
-socket.on('sendingMsg', function(data){
-    newMessage(data);
+socket.on('sendingMsg', function(data, nickname){
+    newMessage(data, nickname);
+    
 });
 
-socket.on('drawingEmit', function(x, y, isDown){
-    console.log("draw");
-    Draw(x, y, isDown);
+socket.on('drawingEmit', function(x, y, isDown, lastX, lastY){
+    //console.log("draw");
+    console.log("is down " + isDown);
+    if(isDown){
+        Draw(x, y, isDown, startX, startY);
+    }
 });
 
 socket.on('clearArea', function(data){
    clearArea();
-   console.log("clear");
+   //console.log("clear");
 });
 
 
@@ -35,33 +50,37 @@ socket.on('clearArea', function(data){
 var canvas = document.getElementById("myCanvas");
 var ctx;
 var mousePressed = false;
+var startX, startY;
 var lastX, lastY;
 var ul;
+var x,y;
 
 //DRAWING PART
 function init(){
     ctx = document.getElementById('myCanvas').getContext("2d");
     ul = document.getElementById("messages_ul");
+    clients_ul = document.getElementById("clients_ul");
     $('#myCanvas').mousedown(function (e) {
         mousePressed = true;
-        Draw(e.pageX - $(this).offset().left, e.pageY - $(this).offset().top, false);
+        startX = e.pageX - $(this).offset().left;
+        startY = e.pageY - $(this).offset().top;
+
     });
 
     $('#myCanvas').mousemove(function (e) {
         if (mousePressed) {
             Draw(e.pageX - $(this).offset().left, e.pageY - $(this).offset().top, true);
+                x = e.pageX - $(this).offset().left;
+                y = e.pageY - $(this).offset().top;
 
-                var x = e.pageX - $(this).offset().left;
-                var y = e.pageY - $(this).offset().top;
-                var isDown = true;
-
-            socket.emit('draw', x, y, isDown);
-
+            socket.emit('draw', x, y, mousePressed, startX, startY);
         }
     });
 
     $('#myCanvas').mouseup(function (e) {
         mousePressed = false;
+            lastX = e.pageX - $(this).offset().left;
+            lastY = e.pageY - $(this).offset().top;
     });
         $('#myCanvas').mouseleave(function (e) {
         mousePressed = false;
@@ -75,25 +94,33 @@ function init(){
     });
 
 }
+function saveNickname(){
+    var nickname = document.getElementById('nickname').value;
+    //console.log(nickname);
+    socket.emit('nicknameEmit', nickname);
+}
 //sending msg
 function sendMessage(){
 	var msg = document.getElementById('message').value;
-	console.log(msg);
+	//console.log(msg);
 	socket.emit('messageEmit', msg);
 }
 
-function Draw(x, y, isDown) {
+function Draw(x, y, isDown, startX, startY) {
     if (isDown) {
+        console.log(lastX, lastY);
         ctx.beginPath();
         ctx.strokeStyle = $('#selColor').val();
         ctx.lineWidth = $('#selWidth').val();
         ctx.lineJoin = "round";
-        ctx.moveTo(lastX, lastY);
+        ctx.moveTo(startX, startX);
         ctx.lineTo(x, y);
-        ctx.closePath();
         ctx.stroke();
+        ctx.closePath();
     }
-    lastX = x; lastY = y;
+    
+    lastX = x; lastY = y;  
+
 }
 function clearArea() {
     // Use the identity matrix while clearing the canvas
@@ -102,9 +129,10 @@ function clearArea() {
     
 }
 
-function newMessage(data){
+function newMessage(data, nickname){
+    //console.log(nickname);
     var li = document.createElement("li");
     li.setAttribute("class", "message_li");
-    li.innerHTML = data;
+    li.innerHTML = nickname + ": " + data;
     ul.appendChild(li);
 }
