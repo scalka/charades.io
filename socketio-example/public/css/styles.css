@@ -5,3 +5,19 @@ h1 {
 #myCanvas{
 	border: 1px solid black;
 }
+
+#chat{
+	background-color:  #b9efff;
+	min-width: 200px;
+	min-height: 300px;
+}
+#messages_ul{
+	display: flex;
+	flex-direction: column;
+	list-style: none;
+	background-color:  #b9efff;
+}
+
+.message_li{
+
+}

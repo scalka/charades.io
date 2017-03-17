@@ -5,8 +5,9 @@ var server = require('http').createServer(app); // creates http server which is 
 // require socket.io and make it available to the server
 var io = require('socket.io')(server); //io - input output // require socket.io and make it available to the server
 
-var numOfCliets = 0;
 var clickCount = 0;
+var clients = [];
+var numOfCliets = 0;
 
 //define directiories which are exposed to web
 app.use(express.static(__dirname + '/node_modules'));
@@ -39,9 +40,16 @@ app.get('/users', function(req, res){
 //SERVER SIDE SOCKET.IO
 //if client connects to my socket run this function
 io.on('connection', function(client){
-    console.log("client connected");
     numOfCliets++;
-    io.emit('hello', numOfCliets); //send msges out
+   // console.log(clients);
+    
+    io.clients(function(error, clients){
+        if (error) throw error;
+        io.emit('hello', numOfCliets); //send msges out
+
+        io.emit('clientsList', clients)
+    })   
+
     /* When the server receives one of these messages 
     it increments the clickCount variable and emits a 'buttonUpdate' message to all clients.*/
     client.on('clicked', function(data){
@@ -49,13 +57,33 @@ io.on('connection', function(client){
         io.emit('buttonUpdate', clickCount);
     });
 
-    client.on('messageEmit', function(data){
-        //console.log(data);
-        io.emit('sendingMsg', data);
+    client.on('nicknameEmit', function(data){
+        client.nickname = data;
+        console.log(client.nickname);
+
     });
+
+    client.on('messageEmit', function(data, client){
+        var nickname = this.nickname;
+        console.log(nickname);
+        io.emit('sendingMsg', data, nickname);
+    });
+
+    client.on('draw', function(x, y, isDown, lastX, lastY){
+        console.log(lastX);
+        io.emit('drawingEmit', x, y, isDown, lastX, lastY);
+    });
+
+
 
     client.on('clearArea', function(data){
         io.emit('clearArea');
-        console.log("clear");
+        console.log("clear area");
+    });
+
+    //TODO
+    client.on('disconnect', function(){
+        numOfCliets--;
     });
 });
+
