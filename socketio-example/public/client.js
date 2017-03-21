@@ -48,15 +48,10 @@ var startX, startY;
 var lastX, lastY;
 var ul;
 var x,y;
+var isDown;
 
 socket.on('drawingEmit', function(x, y, isDown, startX, startY){
-    //console.log("draw");
-   /* if(isDown){
-        Draw(x, y, isDown);
-    }*/
     Draw(x, y, isDown, startX, startY);
-    console.log("drawing emit " + x + "  " +   y +"  " + isDown +"  " +  startX +"  " +  startY);
-
 });
 //DRAWING PART
 function init(){
@@ -70,37 +65,26 @@ function init(){
          startY = e.pageY - $(this).offset().top, false;
          x = e.pageX - $(this).offset().left;
          y = e.pageY - $(this).offset().top, false;
+         isDown = "mousedown";
 
-        Draw(e.pageX - $(this).offset().left, e.pageY - $(this).offset().top, "mousedown", startX, startY);
-
-        console.log("mousedown " + x + "  " +   y +"  " + "mousedown" +"  " +  startX +"  " +  startY);
-        var startX = e.pageX - $(this).offset().left;
-        var startY = e.pageY - $(this).offset().top;
-        
+        Draw(e.pageX - $(this).offset().left, e.pageY - $(this).offset().top, isDown, startX, startY);
         socket.emit('draw', x, y, "mousedown", startX, startY);
-        console.log(startX + " " + startY);
-    });
 
+    });
     $('#myCanvas').mousemove(function (e) {
         if (mousePressed) {
-                var x = e.pageX - $(this).offset().left;
-                var y = e.pageY - $(this).offset().top;
-                var isDown = "mousemove";
-                startX = 0;
-                startY = 0;
+            var x = e.pageX - $(this).offset().left;
+            var y = e.pageY - $(this).offset().top;
+            var isDown = "mousemove";
+            startX = 0;
+            startY = 0;
 
             Draw(e.pageX - $(this).offset().left, e.pageY - $(this).offset().top, isDown, startX, startY);
-console.log("mousemove " + x + "  " +   y +"  " + isDown +"  " +  startX +"  " +  startY);
             socket.emit('draw', x, y, isDown, startX, startY);
-            console.log("mouse presses");
         }
     });
-
     $('#myCanvas').mouseup(function (e) {
         mousePressed = false;
-            lastX = e.pageX - $(this).offset().left;
-            lastY = e.pageY - $(this).offset().top;
-            socket.emit('draw', x, y, mousePressed);
     });
         $('#myCanvas').mouseleave(function (e) {
         mousePressed = false;
@@ -113,6 +97,12 @@ console.log("mousemove " + x + "  " +   y +"  " + isDown +"  " +  startX +"  " +
        clearArea();
     });
 
+    //submit message
+    $('#sendMessageForm').submit(function () {
+        sendMessage();
+        var form = document.getElementById("sendMessageForm").reset();
+        return false;
+    });
 }
 
 function Draw(x, y, isDown, startX, startY ) {
