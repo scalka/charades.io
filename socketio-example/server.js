@@ -36,7 +36,7 @@ app.get('/users', function(req, res){
 });
 
 var clickCount = 0;
-var clients = [];
+var allPlayers = [];
 var numOfCliets = 0;
 var line_history = [];
 var active_drawing;
@@ -46,14 +46,11 @@ var point = 0;
 //SERVER SIDE SOCKET.IO
 //if client connects to my socket run this function
 io.on('connection', function(client){
-    numOfCliets++;
-
     client.points = 0;
     
     io.clients(function(error, clients){
         if (error) throw error;
-        io.emit('hello', numOfCliets); //send msges out
-        io.emit('clientsList', clients)
+        io.emit('playersList', clients)
     })   
     /* When the server receives one of these messages 
     it increments the clickCount variable and emits a 'buttonUpdate' message to all clients.*/
@@ -68,10 +65,10 @@ io.on('connection', function(client){
     });
 
     client.on('newPlayer', function(nickname, points){
-        client.nickname = nickname;
-        client.points = points;
-       // console.log(client.nickname);
+          client.nickname = nickname;
+          client.points = points;
 
+        io.emit('playersList', nickname, points);
     });
 
     client.on('messageEmit', function(data, client){
@@ -79,9 +76,7 @@ io.on('connection', function(client){
 
         if (data == active_drawing){
           this.points = this.points + 1;
-          console.log(this.nickname);
-          console.log(this.points);
-
+          io.emit('updatePlayersListEmit', this.nickname, this.points);
         }
         //console.log(nickname);
         io.emit('sendingMsg', data, nickname);

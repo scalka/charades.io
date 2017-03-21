@@ -12,14 +12,17 @@
 
     </head>
     <body onload="init()">
-        <p>Your nickname</p> <input type="text" name="nickname" id="nickname">
-        <button onclick="saveNickname()">Save</button>
-        <p id="clientsList">
-            0 Clients Connected
-        </p>
-        <ul id="clients_ul">
-                
-        </ul>
+
+        <ul id="top_pannel_ul">
+            <li id="nicknameLi">
+                <p>Your nickname</p> <input type="text" name="nickname" id="nickname">
+                <button onclick="saveNickname()">Save</button>
+            </li>
+            <li>
+                <ul id="clients_ul">     
+                </ul>
+            </li>
+        </ul>    
 
         <p>Drawing</p> <input type="text" name="active_drawing" id="active_drawing">
         <button onclick="sendDrawing()">Start drawing</button>

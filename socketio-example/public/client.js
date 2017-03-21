@@ -22,19 +22,19 @@ var player = {
 //listening for messages
 //in this case for hello
 socket.on('hello', function(data){
-    document.getElementById('clientsList').innerHTML = data + "clients with id " + socket.id ;
+    
 });
 
-socket.on('clientsList', function(data){
-    console.log("client " + data);
-    document.getElementById("clientsList").innerHTML = "";
-    for (var i =0 ; i < data.length; i++){
-        var li = document.createElement("li");
-        li.setAttribute("class", "clientsListLi");
-        li.innerHTML = data[i];
-        console.log(data);
-        clients_ul.appendChild(li);
-    }
+socket.on('playersList', function(nickname, points){
+    var li = document.createElement("li");
+    li.setAttribute("class", "clientsListLi");
+    li.setAttribute("id", nickname);
+    li.innerHTML = nickname + " " + points;
+    clients_ul.appendChild(li);
+});
+
+socket.on('updatePlayersListEmit', function(nickname, points){
+    document.getElementById(nickname).innerHTML = nickname + " " + points;
 });
 
 //incoming

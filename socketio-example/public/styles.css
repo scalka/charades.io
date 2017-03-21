@@ -5,3 +5,8 @@ h1 {
 #myCanvas{
 	border: 1px solid black;
 }
+
+#top_pannel_ul{
+	display: flex;
+	flex-flow: row no-wrap;
+}

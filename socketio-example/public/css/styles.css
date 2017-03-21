@@ -1,5 +1,7 @@
-h1 {
-	color: red;
+@import url('https://fonts.googleapis.com/css?family=Roboto');
+
+body{
+	font-family: 'Roboto', sans-serif;
 }
 
 #myCanvas{
@@ -8,8 +10,8 @@ h1 {
 
 #chat{
 	background-color:  #b9efff;
-	min-width: 200px;
-	min-height: 300px;
+	width: 200px;
+	height: 300px;
 }
 #messages_ul{
 	display: flex;
@@ -20,4 +22,14 @@ h1 {
 
 .message_li{
 
+}
+
+#top_pannel_ul{
+	display: flex;
+	flex-flow: row no-wrap;
+	list-style: none;
+}
+
+#nicknameLi{
+	background-color: orange;
 }
