@@ -49,33 +49,50 @@ var lastX, lastY;
 var ul;
 var x,y;
 
-socket.on('drawingEmit', function(x, y, isDown){
+socket.on('drawingEmit', function(x, y, isDown, startX, startY){
     //console.log("draw");
-    console.log("is down " + isDown);
    /* if(isDown){
         Draw(x, y, isDown);
     }*/
-    Draw(x, y, isDown);
+    Draw(x, y, isDown, startX, startY);
+    console.log("drawing emit " + x + "  " +   y +"  " + isDown +"  " +  startX +"  " +  startY);
+
 });
 //DRAWING PART
 function init(){
     ctx = document.getElementById('myCanvas').getContext("2d");
     ul = document.getElementById("messages_ul");
     clients_ul = document.getElementById("clients_ul");
+
     $('#myCanvas').mousedown(function (e) {
          mousePressed = true;
-        Draw(e.pageX - $(this).offset().left, e.pageY - $(this).offset().top, false);
+         startX = e.pageX - $(this).offset().left;
+         startY = e.pageY - $(this).offset().top, false;
+         x = e.pageX - $(this).offset().left;
+         y = e.pageY - $(this).offset().top, false;
+
+        Draw(e.pageX - $(this).offset().left, e.pageY - $(this).offset().top, "mousedown", startX, startY);
+
+        console.log("mousedown " + x + "  " +   y +"  " + "mousedown" +"  " +  startX +"  " +  startY);
+        var startX = e.pageX - $(this).offset().left;
+        var startY = e.pageY - $(this).offset().top;
+        
+        socket.emit('draw', x, y, "mousedown", startX, startY);
+        console.log(startX + " " + startY);
     });
 
     $('#myCanvas').mousemove(function (e) {
         if (mousePressed) {
-            Draw(e.pageX - $(this).offset().left, e.pageY - $(this).offset().top, true);
-
                 var x = e.pageX - $(this).offset().left;
                 var y = e.pageY - $(this).offset().top;
-                var isDown = true;
+                var isDown = "mousemove";
+                startX = 0;
+                startY = 0;
 
-            socket.emit('draw', x, y, isDown);
+            Draw(e.pageX - $(this).offset().left, e.pageY - $(this).offset().top, isDown, startX, startY);
+console.log("mousemove " + x + "  " +   y +"  " + isDown +"  " +  startX +"  " +  startY);
+            socket.emit('draw', x, y, isDown, startX, startY);
+            console.log("mouse presses");
         }
     });
 
@@ -97,7 +114,34 @@ function init(){
     });
 
 }
-function Draw(x, y, isDown) {
+
+function Draw(x, y, isDown, startX, startY ) {
+    ctx.strokeStyle = $('#selColor').val();
+    ctx.lineWidth = $('#selWidth').val();
+    ctx.lineJoin = "round";
+
+    if (x == startX && y == startY) {
+        console.log(isDown);
+        ctx.beginPath();
+        ctx.moveTo(startX, startY);
+        ctx.lineTo(x, y);
+        ctx.stroke();
+
+        lastX = x;
+        lastY = y;
+    }
+    else if (isDown == "mousemove"){
+        console.log(isDown);
+        ctx.moveTo(lastX, lastY);
+        ctx.lineTo(x, y);
+        ctx.closePath();
+        ctx.stroke();
+    }
+    lastX = x; lastY = y;
+}
+
+
+/*function Draw(x, y, isDown) {
     if (isDown) {
         ctx.beginPath();
         ctx.strokeStyle = $('#selColor').val();
@@ -110,7 +154,7 @@ function Draw(x, y, isDown) {
     }
     lastX = x; lastY = y;
 }
-
+*/
 function saveNickname(){
     var nickname = document.getElementById('nickname').value;
     //console.log(nickname);

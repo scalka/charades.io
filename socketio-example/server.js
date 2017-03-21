@@ -60,18 +60,19 @@ io.on('connection', function(client){
 
     client.on('nicknameEmit', function(data){
         client.nickname = data;
-        console.log(client.nickname);
+       // console.log(client.nickname);
 
     });
 
     client.on('messageEmit', function(data, client){
         var nickname = this.nickname;
-        console.log(nickname);
+        //console.log(nickname);
         io.emit('sendingMsg', data, nickname);
     });
 
-    client.on('draw', function(x, y, isDown){
-        io.emit('drawingEmit', x, y, isDown);
+    client.on('draw', function(x, y, isDown, startX, startY){
+        console.log(x, y, isDown, startX, startY);
+        io.emit('drawingEmit', x, y, isDown, startX, startY);
     });
 
 
