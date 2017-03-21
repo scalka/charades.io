@@ -8,6 +8,7 @@ var io = require('socket.io')(server); //io - input output // require socket.io 
 var clickCount = 0;
 var clients = [];
 var numOfCliets = 0;
+var line_history = [];
 
 //define directiories which are exposed to web
 app.use(express.static(__dirname + '/node_modules'));
@@ -69,9 +70,8 @@ io.on('connection', function(client){
         io.emit('sendingMsg', data, nickname);
     });
 
-    client.on('draw', function(x, y, isDown, lastX, lastY){
-        console.log(lastX);
-        io.emit('drawingEmit', x, y, isDown, lastX, lastY);
+    client.on('draw', function(x, y, isDown){
+        io.emit('drawingEmit', x, y, isDown);
     });
 
 
@@ -85,5 +85,20 @@ io.on('connection', function(client){
     client.on('disconnect', function(){
         numOfCliets--;
     });
+
+
+    // first send the history to the new client
+   for (var i in line_history) {
+      io.emit('draw_line', { line: line_history[i] } );
+   }
+
+   // add handler for message type "draw_line".
+   client.on('draw_line', function (data) {
+    console.log(data);
+      // add received line to history 
+      line_history.push(data.line);
+      // send line to all clients
+      io.emit('draw_line', { line: data.line });
+   });
 });
 
