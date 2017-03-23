@@ -18,38 +18,37 @@ var player = {
   nickname: "nickname",
   points: 0
 }
-           
-//listening for messages
-//in this case for hello
-socket.on('hello', function(data){
-    
-});
 
-socket.on('playersList', function(nickname, points){
+
+/*socket.on('playersList', function(nickname, points){
     var li = document.createElement("li");
     li.setAttribute("class", "clientsListLi");
     li.setAttribute("id", nickname);
     li.innerHTML = nickname + " " + points;
     clients_ul.appendChild(li);
+});*/
+socket.on('playersList', function(clients){
+    document.getElementById('clients_ul').innerHTML = '';
+    for(var i=0; i<clients.length; i++){
+        console.log(clients[i]);
+        var li = document.createElement("li");
+        li.setAttribute("class", "clientsListLi");
+        li.setAttribute("id", clients[i].nickname);
+        li.innerHTML = clients[i].nickname + " " + clients[i].points;
+        clients_ul.appendChild(li);
+    }
 });
 
 socket.on('updatePlayersListEmit', function(nickname, points){
     document.getElementById(nickname).innerHTML = nickname + " " + points;
 });
 
-//incoming
-socket.on('buttonUpdate', function(data){
-    document.getElementById("buttonCount").innerHTML = 'The button has been clicked ' + data + ' times.';
-});
-
 socket.on('sendingMsg', function(data, nickname){
     newMessage(data, nickname);
-    
 });
 
 socket.on('clearArea', function(data){
    clearArea();
-   //console.log("clear");
 });
 
 socket.on('drawingEmit', function(x, y, isDown, startX, startY){
@@ -61,7 +60,7 @@ function sendDrawing(){
   socket.emit('activeDrawing', active_drawing);
 }
 function saveNickname(){
-    var nickname = document.getElementById('nickname').value;
+    var nickname = prompt("Nickname: ");
     //console.log(nickname);
     socket.emit('newPlayer', nickname, 0);
 }
@@ -90,6 +89,8 @@ function init(){
     ctx = document.getElementById('myCanvas').getContext("2d");
     ul = document.getElementById("messages_ul");
     clients_ul = document.getElementById("clients_ul");
+
+    saveNickname();
 
 
     $('#myCanvas').mousedown(function (e) {

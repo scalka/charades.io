@@ -50,7 +50,7 @@ io.on('connection', function(client){
     
     io.clients(function(error, clients){
         if (error) throw error;
-        io.emit('playersList', clients)
+        //io.emit('playersList', clients)
     })   
     /* When the server receives one of these messages 
     it increments the clickCount variable and emits a 'buttonUpdate' message to all clients.*/
@@ -65,10 +65,15 @@ io.on('connection', function(client){
     });
 
     client.on('newPlayer', function(nickname, points){
-          client.nickname = nickname;
-          client.points = points;
-
-        io.emit('playersList', nickname, points);
+          /*client.nickname = nickname;
+          client.points = points;*/
+        client = {
+            nickname: nickname,
+            points: points
+        }  
+        allPlayers.push(client);
+        console.log(allPlayers);
+        io.emit('playersList', allPlayers);
     });
 
     client.on('messageEmit', function(data, client){
@@ -97,6 +102,10 @@ io.on('connection', function(client){
     //TODO
     client.on('disconnect', function(){
         numOfCliets--;
+        var index = allPlayers.indexOf(client);
+        allPlayers.splice(index, 1);
+        console.log(allPlayers);
+        io.emit('playersList', allPlayers);
     });
 
 });
