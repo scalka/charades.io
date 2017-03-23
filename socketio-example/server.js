@@ -5,8 +5,6 @@ var server = require('http').createServer(app); // creates http server which is 
 // require socket.io and make it available to the server
 var io = require('socket.io')(server); //io - input output // require socket.io and make it available to the server
 
-
-
 //define directiories which are exposed to web
 app.use(express.static(__dirname + '/node_modules'));
 //feature of Express is its ability to server static files like images, CSS files and JavaScript files
@@ -42,22 +40,19 @@ var line_history = [];
 var active_drawing;
 var point = 0;
 
+var drawingQueue = [];
+
 
 //SERVER SIDE SOCKET.IO
 //if client connects to my socket run this function
 io.on('connection', function(client){
     client.points = 0;
+    client.id = client.id;
     
     io.clients(function(error, clients){
         if (error) throw error;
         //io.emit('playersList', clients)
     })   
-    /* When the server receives one of these messages 
-    it increments the clickCount variable and emits a 'buttonUpdate' message to all clients.*/
-    client.on('clicked', function(data){
-        clickCount++;
-        io.emit('buttonUpdate', clickCount);
-    });
 
     client.on('activeDrawing', function(data){
       active_drawing = data;
@@ -69,7 +64,8 @@ io.on('connection', function(client){
           client.points = points;*/
         client = {
             nickname: nickname,
-            points: points
+            points: points,
+            id: client.id
         }  
         allPlayers.push(client);
         //console.log(allPlayers);
@@ -92,6 +88,19 @@ io.on('connection', function(client){
         io.emit('drawingEmit', x, y, isDown, startX, startY);
     });
 
+    client.on('IwantToDrawClicked', function(client) {
+        console.log(client);
+        drawingQueue.push(client);
+        for (var i=0; i < drawingQueue.length; i++){
+            setInterval(function(){
+                console.log(drawingQueue[i]);
+                if (i == drawingQueue.length){
+                    i=0;
+                }
+                io.broadcast.to(drawingQueue[i].id).emit('youDraw','msg');
+            }, 10000);
+        }
+    })
 
 
     client.on('clearArea', function(data){
