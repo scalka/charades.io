@@ -19,15 +19,9 @@ var player = {
   points: 0
 }
 
+socket.on('playersList', function(clients, client){
+   // player.nickname = client.nickname;
 
-/*socket.on('playersList', function(nickname, points){
-    var li = document.createElement("li");
-    li.setAttribute("class", "clientsListLi");
-    li.setAttribute("id", nickname);
-    li.innerHTML = nickname + " " + points;
-    clients_ul.appendChild(li);
-});*/
-socket.on('playersList', function(clients){
     document.getElementById('clients_ul').innerHTML = '';
     for(var i=0; i<clients.length; i++){
         console.log(clients[i]);
@@ -41,6 +35,7 @@ socket.on('playersList', function(clients){
 
 socket.on('updatePlayersListEmit', function(nickname, points){
     document.getElementById(nickname).innerHTML = nickname + " " + points;
+    newMessage(nickname, "WON THIS ROUND!!!");
 });
 
 socket.on('sendingMsg', function(data, nickname){
@@ -63,12 +58,13 @@ function saveNickname(){
     var nickname = prompt("Nickname: ");
     //console.log(nickname);
     socket.emit('newPlayer', nickname, 0);
+    player.nickname = nickname;
 }
 //sending msg
 function sendMessage(){
   var msg = document.getElementById('message').value;
-  //console.log(msg);
-  socket.emit('messageEmit', msg);
+
+  socket.emit('messageEmit', msg, player.nickname);
 }
 function clearArea() {
     // Use the identity matrix while clearing the canvas

@@ -72,19 +72,19 @@ io.on('connection', function(client){
             points: points
         }  
         allPlayers.push(client);
-        console.log(allPlayers);
-        io.emit('playersList', allPlayers);
+        //console.log(allPlayers);
+        io.emit('playersList', allPlayers, client);
     });
 
-    client.on('messageEmit', function(data, client){
-        var nickname = this.nickname;
-
-        if (data == active_drawing){
+    client.on('messageEmit', function(msg, client){
+        var nickname = client;
+        console.log("client"+client);
+        if (msg == active_drawing){
           this.points = this.points + 1;
-          io.emit('updatePlayersListEmit', this.nickname, this.points);
+          io.emit('updatePlayersListEmit', nickname, this.points);
         }
-        //console.log(nickname);
-        io.emit('sendingMsg', data, nickname);
+
+        io.emit('sendingMsg', msg, nickname);
     });
 
     client.on('draw', function(x, y, isDown, startX, startY){
