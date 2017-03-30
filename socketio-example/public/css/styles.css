@@ -53,3 +53,7 @@ body{
 #nicknameLi{
 	background-color: orange;
 }
+
+#what_are_you_drawing{
+	display: none;
+}

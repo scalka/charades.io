@@ -39,16 +39,17 @@ var numOfCliets = 0;
 var line_history = [];
 var active_drawing;
 var point = 0;
-
-var drawingQueue = [];
-
+var clientId;
+var drawingQueue = false;
 
 //SERVER SIDE SOCKET.IO
 //if client connects to my socket run this function
 io.on('connection', function(client){
     client.points = 0;
-    client.id = client.id;
-    
+    console.log("connection id: " + client.id);
+    clientId = client.id;
+
+
     io.clients(function(error, clients){
         if (error) throw error;
         //io.emit('playersList', clients)
@@ -60,12 +61,10 @@ io.on('connection', function(client){
     });
 
     client.on('newPlayer', function(nickname, points){
-          /*client.nickname = nickname;
-          client.points = points;*/
         client = {
             nickname: nickname,
             points: points,
-            id: client.id
+            id: clientId
         }  
         allPlayers.push(client);
         //console.log(allPlayers);
@@ -88,18 +87,22 @@ io.on('connection', function(client){
         io.emit('drawingEmit', x, y, isDown, startX, startY);
     });
 
+    client.on('nextRound', function () {
+        drawingQueue = false;
+    });
+
     client.on('IwantToDrawClicked', function(client) {
-        console.log(client);
-        drawingQueue.push(client);
-        for (var i=0; i < drawingQueue.length; i++){
-            setInterval(function(){
-                console.log(drawingQueue[i]);
-                if (i == drawingQueue.length){
-                    i=0;
-                }
-                io.broadcast.to(drawingQueue[i].id).emit('youDraw','msg');
-            }, 10000);
+        function findPlayer(allPlayers){
+                return allPlayers.nickname === client;
+            }
+        var player = allPlayers.find(findPlayer);
+        console.log("find player" + player.id + " " + player.nickname);
+        var msg = "mesage to you";
+        if (drawingQueue === false){
+
+            io.to(player.id).emit('youDraw', msg);
         }
+        drawingQueue = true;
     })
 
 

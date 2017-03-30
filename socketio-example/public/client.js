@@ -21,29 +21,27 @@ var player = {
 }
 
 socket.on('playersList', function(clients, client){
-   // player.nickname = client.nickname;
-   /* player = client;
-    player.id = client.id;
-    player.nickname = client.nickname
-    console.log(player);*/
     document.getElementById('clients_ul').innerHTML = '';
     for(var i=0; i<clients.length; i++){
         console.log(clients[i]);
         var li = document.createElement("li");
         li.setAttribute("class", "clientsListLi");
         li.setAttribute("id", clients[i].nickname);
-        li.innerHTML = clients[i].nickname + " " + clients[i].points;
+        li.innerHTML = clients[i].nickname + " " + clients[i].points + " " +clients[i].id ;
         clients_ul.appendChild(li);
     }
 });
 
 socket.on('youDraw', function(data){
-    console.log(data);
+    console.log("you draw" + data);
+    document.getElementById("what_are_you_drawing").style.display = "block";
 });
 
 socket.on('updatePlayersListEmit', function(nickname, points){
+    document.getElementById("what_are_you_drawing").style.display = "none";
     document.getElementById(nickname).innerHTML = nickname + " " + points;
     newMessage(nickname, "WON THIS ROUND!!!");
+    socket.emit('nextRound');
 });
 
 socket.on('sendingMsg', function(data, nickname){
@@ -58,9 +56,10 @@ socket.on('drawingEmit', function(x, y, isDown, startX, startY){
     Draw(x, y, isDown, startX, startY);
 });
 
-function IwantToDraw(){
-    console.log(player.id);
-    socket.emit('IwantToDrawClicked', player);
+
+function IwantToDraw(nickname){
+    console.log("i want to draw clicked: " + player.nickname) ;
+    socket.emit('IwantToDrawClicked', player.nickname);
 }
 
 function sendDrawing(){
@@ -72,13 +71,12 @@ function saveNickname(){
     //console.log(nickname);
     socket.emit('newPlayer', nickname, 0);
     player.nickname = nickname;
+
 }
+
 //sending msg
 function sendMessage(){
   var msg = document.getElementById('message').value;
-  console.log(player.nickname);
-  console.log(player);
-  console.log(this);
   socket.emit('messageEmit', msg, player.nickname);
 }
 function clearArea() {
