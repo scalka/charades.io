@@ -20,8 +20,11 @@ var player = {
   id: "id"
 }
 
+var playersList = [];
+
 socket.on('playersList', function(clients, client){
    // player.nickname = client.nickname;
+    playersList = clients;
     player = client;
     player.id = client.id;
     console.log(player);
@@ -36,17 +39,18 @@ socket.on('playersList', function(clients, client){
     }
 });
 
-socket.on('youDraw', function(data){
+/*socket.on('youDraw', function(data){
     console.log(data);
 });
-
+*/
 socket.on('updatePlayersListEmit', function(nickname, points){
     document.getElementById(nickname).innerHTML = nickname + " " + points;
     newMessage(nickname, "WON THIS ROUND!!!");
 });
 
-socket.on('sendingMsg', function(data, nickname){
-    newMessage(data, nickname);
+socket.on('sendingMsg', function(data, client){
+    newMessage(data, client);
+    console.log(client);
 });
 
 socket.on('clearArea', function(data){
@@ -56,12 +60,12 @@ socket.on('clearArea', function(data){
 socket.on('drawingEmit', function(x, y, isDown, startX, startY){
     Draw(x, y, isDown, startX, startY);
 });
-
+/*
 function IwantToDraw(){
     console.log(player.id);
     socket.emit('IwantToDrawClicked', player);
 }
-
+*/
 function sendDrawing(){
   active_drawing = document.getElementById('active_drawing').value;
   socket.emit('activeDrawing', active_drawing);
@@ -75,7 +79,7 @@ function saveNickname(){
 //sending msg
 function sendMessage(){
   var msg = document.getElementById('message').value;
-
+  console.log(player);
   socket.emit('messageEmit', msg, player.nickname);
 }
 function clearArea() {
