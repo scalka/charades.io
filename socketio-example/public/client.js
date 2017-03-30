@@ -37,10 +37,16 @@ socket.on('youDraw', function(data){
     document.getElementById("what_are_you_drawing").style.display = "block";
 });
 
+socket.on('whoIsDrawing', function (nickname) {
+    document.getElementById('who_is_drawing').style.display = "block";
+    document.getElementById('who_is_drawing_h2').innerHTML = "Now is drawing: " + nickname;
+})
+
 socket.on('updatePlayersListEmit', function(nickname, points){
     document.getElementById("what_are_you_drawing").style.display = "none";
     document.getElementById(nickname).innerHTML = nickname + " " + points;
     newMessage(nickname, "WON THIS ROUND!!!");
+    document.getElementById('who_is_drawing').style.display = "none";
     socket.emit('nextRound');
 });
 

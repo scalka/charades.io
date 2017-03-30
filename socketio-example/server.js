@@ -98,9 +98,10 @@ io.on('connection', function(client){
         var player = allPlayers.find(findPlayer);
         console.log("find player" + player.id + " " + player.nickname);
         var msg = "mesage to you";
+        
         if (drawingQueue === false){
-
             io.to(player.id).emit('youDraw', msg);
+            io.emit('whoIsDrawing', player.nickname);
         }
         drawingQueue = true;
     })

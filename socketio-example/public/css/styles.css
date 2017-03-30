@@ -32,6 +32,7 @@ body{
 	background-color:  #b9efff;
 	min-width: 300px;
 	min-height: 500px;
+	overflow: auto;
 }
 #messages_ul{
 	display: flex;
@@ -55,5 +56,9 @@ body{
 }
 
 #what_are_you_drawing{
+	display: none;
+}
+
+#who_is_drawing{
 	display: none;
 }
