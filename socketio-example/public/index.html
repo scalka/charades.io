@@ -19,8 +19,13 @@
         </div>
         <div id="game_container">
             <div id="drawing_panel">
-                <p>Drawing</p> <input type="text" name="active_drawing" id="active_drawing">
-                <button onclick="sendDrawing()">Start drawing</button>
+                <div id="what_are_you_drawing">
+                    <p>What are you drawing?</p> <input type="text" name="active_drawing" id="active_drawing">
+                    <button onclick="sendDrawing()">Start drawing</button>
+                </div>  
+                <div id="who_is_drawing">
+                    <h2 id="who_is_drawing_h2"></h2>
+                </div>  
 
                 <canvas id="myCanvas" width="500" height="500"></canvas>
                  <br>

@@ -5,6 +5,8 @@ var server = require('http').createServer(app); // creates http server which is 
 // require socket.io and make it available to the server
 var io = require('socket.io')(server); //io - input output // require socket.io and make it available to the server
 
+
+
 //define directiories which are exposed to web
 app.use(express.static(__dirname + '/node_modules'));
 //feature of Express is its ability to server static files like images, CSS files and JavaScript files
@@ -39,21 +41,23 @@ var numOfCliets = 0;
 var line_history = [];
 var active_drawing;
 var point = 0;
-var clientId;
-var drawingQueue = false;
+
 
 //SERVER SIDE SOCKET.IO
 //if client connects to my socket run this function
 io.on('connection', function(client){
     client.points = 0;
-    console.log("connection id: " + client.id);
-    clientId = client.id;
-
-
+    
     io.clients(function(error, clients){
         if (error) throw error;
         //io.emit('playersList', clients)
     })   
+    /* When the server receives one of these messages 
+    it increments the clickCount variable and emits a 'buttonUpdate' message to all clients.*/
+    client.on('clicked', function(data){
+        clickCount++;
+        io.emit('buttonUpdate', clickCount);
+    });
 
     client.on('activeDrawing', function(data){
       active_drawing = data;
@@ -61,10 +65,11 @@ io.on('connection', function(client){
     });
 
     client.on('newPlayer', function(nickname, points){
+          /*client.nickname = nickname;
+          client.points = points;*/
         client = {
             nickname: nickname,
-            points: points,
-            id: clientId
+            points: points
         }  
         allPlayers.push(client);
         //console.log(allPlayers);
@@ -87,24 +92,6 @@ io.on('connection', function(client){
         io.emit('drawingEmit', x, y, isDown, startX, startY);
     });
 
-    client.on('nextRound', function () {
-        drawingQueue = false;
-    });
-
-    client.on('IwantToDrawClicked', function(client) {
-        function findPlayer(allPlayers){
-                return allPlayers.nickname === client;
-            }
-        var player = allPlayers.find(findPlayer);
-        console.log("find player" + player.id + " " + player.nickname);
-        var msg = "mesage to you";
-        
-        if (drawingQueue === false){
-            io.to(player.id).emit('youDraw', msg);
-            io.emit('whoIsDrawing', player.nickname);
-        }
-        drawingQueue = true;
-    })
 
 
     client.on('clearArea', function(data){
