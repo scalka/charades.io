@@ -5,3 +5,7 @@ To run this project type in a console:
 ```
 node server.js 
 ```
+And navigate to localhost in a browser:
+```
+http://localhost:3000
+```
