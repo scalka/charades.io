@@ -10,3 +10,7 @@ And then navigate to localhost in a browser:
 ```
 http://localhost:3000
 ```
+Other players can join by connecting to the same network and typing in a browser
+```
+http://local_ip_address:3000
+```
