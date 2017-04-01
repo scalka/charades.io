@@ -29,7 +29,7 @@ socket.on('playersList', function(clients, client){
         var li = document.createElement("li");
         li.setAttribute("class", "clientsListLi");
         li.setAttribute("id", clients[i].nickname);
-        li.innerHTML = clients[i].nickname + " " + clients[i].points;
+        li.innerHTML = clients[i].nickname + " " + clients[i].points + " " + clients[i].id;
         clients_ol.appendChild(li);
     }
 });
@@ -46,11 +46,15 @@ socket.on('whoIsDrawing', function (nickname) {
 
 });
 
-socket.on('updatePlayersListEmit', function(nickname, points){
+socket.on('updatePlayersListEmit', function(nickname, points, sbIsDrawingAndLeft){
     what_are_you_drawing.style.display = "none";
-    document.getElementById(nickname).innerHTML = nickname + " " + points;
-    newMessage(nickname, "WON THIS ROUND: ");
     who_is_drawing.style.display = "none";
+    if(sbIsDrawingAndLeft == false){
+        document.getElementById(nickname).innerHTML = nickname + " " + points;
+        newMessage(nickname, "WON THIS ROUND: ");
+    } else {
+        newMessage( nickname,"PLAYER LEFT THE ROOM");
+    }
     iwantToDrawButton.style.display = "block";
     socket.emit('nextRound');
 });

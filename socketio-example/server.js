@@ -41,6 +41,7 @@ var active_drawing;
 var point = 0;
 var clientId;
 var drawingQueue = false;
+var sbIsDrawingAndLeft = false;
 
 //SERVER SIDE SOCKET.IO
 //if client connects to my socket run this function
@@ -70,11 +71,11 @@ io.on('connection', function(client){
 
     client.on('messageEmit', function(msg, nickname){
         var nickname = nickname;
-        if (msg == active_drawing){
-          player.points = player.points + 1;
-          io.emit('updatePlayersListEmit', nickname, player.points);
-        }
         io.emit('sendingMsg', msg, nickname);
+        if (msg === active_drawing){
+          player.points = player.points + 1;
+          io.emit('updatePlayersListEmit', nickname, player.points, sbIsDrawingAndLeft);
+        }
     });
 
     client.on('draw', function(x, y, isDown, startX, startY){
@@ -87,6 +88,7 @@ io.on('connection', function(client){
     });
 
     client.on('IwantToDrawClicked', function(player) {
+        sbIsDrawingAndLeft = false;
         function findPlayer(allPlayers){
                 return allPlayers.nickname === player;
         }
@@ -99,20 +101,24 @@ io.on('connection', function(client){
             io.to(drawing_player.id).emit('youDraw', msg);
         }
         drawingQueue = true;
-    })
-
+    });
 
     client.on('clearArea', function(data){
         io.emit('clearArea');
         console.log("clear area");
     });
 
-    //TODO
+
     client.on('disconnect', function(){
-        numOfCliets--;
-        var index = allPlayers.indexOf(player);
-        allPlayers.splice(index, 1);
-        /*console.log(allPlayers);*/
+        sbIsDrawingAndLeft = true;
+        
+        for (var i = 0; i < allPlayers.length; i++ ){
+            if(allPlayers[i].id === client.id){
+                io.emit('updatePlayersListEmit', allPlayers[i].nickname, allPlayers[i].points, sbIsDrawingAndLeft);
+                allPlayers.splice(i, 1);
+            }
+        }
+
         io.emit('playersList', allPlayers);
     });
 
