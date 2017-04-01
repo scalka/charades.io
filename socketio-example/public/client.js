@@ -13,6 +13,7 @@ var lastX, lastY;
 var ul;
 var x,y;
 var isDown;
+var chatDiv;
 
 var player = {
   nickname: "nickname",
@@ -52,6 +53,7 @@ socket.on('updatePlayersListEmit', function(nickname, points){
 
 socket.on('sendingMsg', function(data, nickname){
     newMessage(data, nickname);
+    chatDiv.scrollTop = chatDiv.scrollHeight;
 });
 
 socket.on('clearArea', function(data){
@@ -106,6 +108,9 @@ function init(){
     clients_ul = document.getElementById("clients_ul");
 
     saveNickname();
+
+    chatDiv = document.getElementById('chat');
+
 
 
     $('#myCanvas').mousedown(function (e) {
