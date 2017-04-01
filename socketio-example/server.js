@@ -56,69 +56,74 @@ io.on('connection', function(client){
     io.clients(function(error, clients){
         if (error) throw error;
     });   
-
-    client.on('activeDrawing', function(data){
-      active_drawing = data;
-      /*console.log(active_drawing);
-*/    });
-
+    //prompt function to save nickname
     client.on('newPlayer', function(nickname, points){
+        //saving nicname on server side for player object
         player.nickname = nickname;
+        //array with all the current clients
         allPlayers.push(player);
-        //console.log(allPlayers);
+        //update list of players
         io.emit('playersList', allPlayers, player);
     });
-
+    //sending new msg in the chat
     client.on('messageEmit', function(msg, nickname){
-        var nickname = nickname;
-        io.emit('sendingMsg', msg, nickname);
+        //emit message to all clients
+        io.emit('emittingMessage', msg, nickname);
+        //if msg equals the drawing, add points to player who guessed and update content on client side
         if (msg === active_drawing){
           player.points = player.points + 1;
-          io.emit('updatePlayersListEmit', nickname, player.points, sbIsDrawingAndLeft);
+          //update Players List And Top Panel with info who is drawing
+          io.emit('updatePlayersListAndTopPanel', nickname, player.points, sbIsDrawingAndLeft);
         }
     });
-
-    client.on('draw', function(x, y, isDown, startX, startY){
-/*        console.log(x, y, isDown, startX, startY);*/
-        io.emit('drawingEmit', x, y, isDown, startX, startY);
-    });
-
+    //next round, drawing queue is free 
     client.on('nextRound', function () {
         drawingQueue = false;
     });
-
-    client.on('IwantToDrawClicked', function(player) {
+    //sb wants to draw and clieckd i want to draw
+    client.on('IwantToDrawClicked', function(nickname) {
         sbIsDrawingAndLeft = false;
+        //find player who wants to draw
+        //this function returns a player from an array with a given nickname
         function findPlayer(allPlayers){
-                return allPlayers.nickname === player;
+            return allPlayers.nickname === nickname;
         }
         var drawing_player = allPlayers.find(findPlayer);
-        /*console.log("find player" + player.id + " " + player.nickname);*/
-        var msg = "mesage to you";
-        
+       
         if (drawingQueue === false){
+            //emmiting who is currently drawing
             io.emit('whoIsDrawing', drawing_player.nickname);
+            var msg = "you are drawing";
+            //sending a msg to player who is drawing 
             io.to(drawing_player.id).emit('youDraw', msg);
         }
         drawingQueue = true;
     });
-
+    //emitting the drawing coordinates from client
+    client.on('draw', function(x, y, isDown, startX, startY){
+        io.emit('drawingEmit', x, y, isDown, startX, startY);
+    });
+    ////emmiting what needs to be guessed as a drawing
+    client.on('activeDrawing', function(data){
+      active_drawing = data;
+    });
+    //clearing canvases
     client.on('clearArea', function(data){
         io.emit('clearArea');
-        console.log("clear area");
     });
-
-
+    //disconnected client
     client.on('disconnect', function(){
         sbIsDrawingAndLeft = true;
-        
+        //checking which player disconnected and deleting him from an array
         for (var i = 0; i < allPlayers.length; i++ ){
             if(allPlayers[i].id === client.id){
-                io.emit('updatePlayersListEmit', allPlayers[i].nickname, allPlayers[i].points, sbIsDrawingAndLeft);
+                //update top pannel
+                io.emit('updatePlayersListAndTopPanel', allPlayers[i].nickname, allPlayers[i].points, sbIsDrawingAndLeft);
+                //delete from array
                 allPlayers.splice(i, 1);
             }
         }
-
+        //update list of clients
         io.emit('playersList', allPlayers);
     });
 
