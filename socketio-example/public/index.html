@@ -12,58 +12,60 @@
 
     </head>
     <body onload="init()">
-        <div id="players_div">
-            <h2>All players:</h2>
-            <ul id="clients_ul">     
-            </ul>
-        </div>
+        
         <div id="game_container">
             <div id="drawing_panel">
-                <div id="what_are_you_drawing">
-                    <p>What are you drawing?</p> <input type="text" name="active_drawing" id="active_drawing">
-                    <button onclick="sendDrawing()">Start drawing</button>
-                </div>  
-                <div id="who_is_drawing">
-                    <h2 id="who_is_drawing_h2"></h2>
-                </div>  
+                <div id="top_pannel">
+                    <div id="what_are_you_drawing">
+                        <p>What are you drawing?</p> <input type="text" name="active_drawing" id="active_drawing">
+                        <button onclick="sendDrawing()">Start drawing</button>
+                    </div>  
+                    <div id="who_is_drawing">
+                        <h2 id="who_is_drawing_h2"></h2>
+                    </div>  
+                    <div id="nobody_is_drwing">
+                        <button id="IwantToDraw" onclick="IwantToDraw()">I want to draw</button>
+                    </div>
+                </div>
 
                 <canvas id="myCanvas" width="500" height="500"></canvas>
-                 <br>
-                 <button id="clearCanvas">Clear Area</button>
-                 Line width : <select id="selWidth">
-                    <option value="1">1</option>
-                    <option value="3">3</option>
-                    <option value="5">5</option>
-                    <option value="7">7</option>
-                    <option value="9" selected="selected">9</option>
-                    <option value="11">11</option>
+                <br>
+                <button id="clearCanvas">Clear Area</button>
+                <!--                  Line width : <select id="selWidth">
+                <option value="1">1</option>
+                <option value="3">3</option>
+                <option value="5">5</option>
+                <option value="7">7</option>
+                <option value="9" selected="selected">9</option>
+                <option value="11">11</option>
                 </select>
                 Color : <select id="selColor">
-                    <option value="black">black</option>
-                    <option value="blue" selected="selected">blue</option>
-                    <option value="red">red</option>
-                    <option value="green">green</option>
-                    <option value="yellow">yellow</option>
-                    <option value="gray">gray</option>
-                </select>
+                <option value="black">black</option>
+                <option value="blue" selected="selected">blue</option>
+                <option value="red">red</option>
+                <option value="green">green</option>
+                <option value="yellow">yellow</option>
+                <option value="gray">gray</option>
+                </select> -->
             </div>    
-            <div id="chat_panel">
-                <div id="chat">
-                    <button id="IwantToDraw" onclick="IwantToDraw()">I want to draw</button>
-                    <ul id="messages_ul">
-                        
-                    </ul>
-                </div>
-                <form id="sendMessageForm">
-                     <input type="text" name="message" id="message">
-                     <!-- <button id="sendMessage" onclick="sendMessage()">Send</button> -->
-                     <input id="sendMessage" type="submit" value="Send">
-                 </form>
-            </div>    
+        <div id="chat_panel">
+            <div id="chat">
+
+                <ul id="messages_ul">
+
+                </ul>
+            </div>
+            <form id="sendMessageForm">
+                <input type="text" name="message" id="message">
+                <!-- <button id="sendMessage" onclick="sendMessage()">Send</button> -->
+                <input id="sendMessage" type="submit" value="Send">
+            </form>
+            <div id="players_div">
+                <h3>All players:</h3>
+                <ol id="clients_ol">     
+                </ol>
+            </div>
+        </div>    
         </div>     
     </body>
-
 </html>
-
-
-<!-- onclick="clearArea()" -->

@@ -100,8 +100,8 @@ io.on('connection', function(client){
         var msg = "mesage to you";
         
         if (drawingQueue === false){
-            io.to(player.id).emit('youDraw', msg);
             io.emit('whoIsDrawing', player.nickname);
+            io.to(player.id).emit('youDraw', msg);
         }
         drawingQueue = true;
     })

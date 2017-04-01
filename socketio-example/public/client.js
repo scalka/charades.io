@@ -14,6 +14,9 @@ var ul;
 var x,y;
 var isDown;
 var chatDiv;
+var iwantToDrawButton;
+var what_are_you_drawing;
+var who_is_drawing;
 
 var player = {
   nickname: "nickname",
@@ -22,32 +25,34 @@ var player = {
 }
 
 socket.on('playersList', function(clients, client){
-    document.getElementById('clients_ul').innerHTML = '';
+    document.getElementById('clients_ol').innerHTML = '';
     for(var i=0; i<clients.length; i++){
-        console.log(clients[i]);
         var li = document.createElement("li");
         li.setAttribute("class", "clientsListLi");
         li.setAttribute("id", clients[i].nickname);
-        li.innerHTML = clients[i].nickname + " " + clients[i].points + " " +clients[i].id ;
-        clients_ul.appendChild(li);
+        li.innerHTML = clients[i].nickname + " " + clients[i].points;
+        clients_ol.appendChild(li);
     }
 });
 
 socket.on('youDraw', function(data){
-    console.log("you draw" + data);
-    document.getElementById("what_are_you_drawing").style.display = "block";
+    what_are_you_drawing.style.display = "block";
+    who_is_drawing.style.display = "none";
 });
 
 socket.on('whoIsDrawing', function (nickname) {
-    document.getElementById('who_is_drawing').style.display = "block";
+    who_is_drawing.style.display = "block";
     document.getElementById('who_is_drawing_h2').innerHTML = "Now is drawing: " + nickname;
-})
+    iwantToDrawButton.style.display = "none";
+
+});
 
 socket.on('updatePlayersListEmit', function(nickname, points){
-    document.getElementById("what_are_you_drawing").style.display = "none";
+    what_are_you_drawing.style.display = "none";
     document.getElementById(nickname).innerHTML = nickname + " " + points;
-    newMessage(nickname, "WON THIS ROUND!!!");
-    document.getElementById('who_is_drawing').style.display = "none";
+    newMessage(nickname, "WON THIS ROUND: ");
+    who_is_drawing.style.display = "none";
+    iwantToDrawButton.style.display = "block";
     socket.emit('nextRound');
 });
 
@@ -106,12 +111,12 @@ function init(){
     ctx = document.getElementById('myCanvas').getContext("2d");
     ul = document.getElementById("messages_ul");
     clients_ul = document.getElementById("clients_ul");
+    chatDiv = document.getElementById('chat');
+    iwantToDrawButton = document.getElementById('IwantToDraw');
+    what_are_you_drawing = document.getElementById('what_are_you_drawing');
+    who_is_drawing = document.getElementById('who_is_drawing');
 
     saveNickname();
-
-    chatDiv = document.getElementById('chat');
-
-
 
     $('#myCanvas').mousedown(function (e) {
          mousePressed = true;
@@ -160,8 +165,11 @@ function init(){
 }
 
 function Draw(x, y, isDown, startX, startY ) {
-    ctx.strokeStyle = $('#selColor').val();
-    ctx.lineWidth = $('#selWidth').val();
+    //TODO pick color and width
+    /*ctx.strokeStyle = $('#selColor').val();
+    ctx.lineWidth = $('#selWidth').val();*/
+    ctx.strokeStyle = "blue";
+    ctx.lineWidth = 4;
     ctx.lineJoin = "round";
 
     if (x == startX && y == startY) {
