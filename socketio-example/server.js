@@ -45,45 +45,40 @@ var drawingQueue = false;
 //SERVER SIDE SOCKET.IO
 //if client connects to my socket run this function
 io.on('connection', function(client){
-    client.points = 0;
-    console.log("connection id: " + client.id);
-    clientId = client.id;
 
+    player = {
+        nickname: "nickname",
+        points: 0,
+        id: client.id
+    }
 
     io.clients(function(error, clients){
         if (error) throw error;
-        //io.emit('playersList', clients)
-    })   
+    });   
 
     client.on('activeDrawing', function(data){
       active_drawing = data;
-      console.log(active_drawing);
-    });
+      /*console.log(active_drawing);
+*/    });
 
     client.on('newPlayer', function(nickname, points){
-        client = {
-            nickname: nickname,
-            points: points,
-            id: clientId
-        }  
-        allPlayers.push(client);
+        player.nickname = nickname;
+        allPlayers.push(player);
         //console.log(allPlayers);
-        io.emit('playersList', allPlayers, client);
+        io.emit('playersList', allPlayers, player);
     });
 
-    client.on('messageEmit', function(msg, client){
-        var nickname = client;
-        console.log("client"+client);
+    client.on('messageEmit', function(msg, nickname){
+        var nickname = nickname;
         if (msg == active_drawing){
-          this.points = this.points + 1;
-          io.emit('updatePlayersListEmit', nickname, this.points);
+          player.points = player.points + 1;
+          io.emit('updatePlayersListEmit', nickname, player.points);
         }
-
         io.emit('sendingMsg', msg, nickname);
     });
 
     client.on('draw', function(x, y, isDown, startX, startY){
-        console.log(x, y, isDown, startX, startY);
+/*        console.log(x, y, isDown, startX, startY);*/
         io.emit('drawingEmit', x, y, isDown, startX, startY);
     });
 
@@ -91,17 +86,17 @@ io.on('connection', function(client){
         drawingQueue = false;
     });
 
-    client.on('IwantToDrawClicked', function(client) {
+    client.on('IwantToDrawClicked', function(player) {
         function findPlayer(allPlayers){
-                return allPlayers.nickname === client;
-            }
-        var player = allPlayers.find(findPlayer);
-        console.log("find player" + player.id + " " + player.nickname);
+                return allPlayers.nickname === player;
+        }
+        var drawing_player = allPlayers.find(findPlayer);
+        /*console.log("find player" + player.id + " " + player.nickname);*/
         var msg = "mesage to you";
         
         if (drawingQueue === false){
-            io.emit('whoIsDrawing', player.nickname);
-            io.to(player.id).emit('youDraw', msg);
+            io.emit('whoIsDrawing', drawing_player.nickname);
+            io.to(drawing_player.id).emit('youDraw', msg);
         }
         drawingQueue = true;
     })
@@ -115,9 +110,9 @@ io.on('connection', function(client){
     //TODO
     client.on('disconnect', function(){
         numOfCliets--;
-        var index = allPlayers.indexOf(client);
+        var index = allPlayers.indexOf(player);
         allPlayers.splice(index, 1);
-        console.log(allPlayers);
+        /*console.log(allPlayers);*/
         io.emit('playersList', allPlayers);
     });
 

@@ -4,7 +4,6 @@
 */
 var socket = io.connect();
 
-//drawing
 var canvas = document.getElementById("myCanvas");
 var ctx;
 var mousePressed = false;
